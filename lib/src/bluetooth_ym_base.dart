@@ -1,6 +1,7 @@
-// TODO: Put public facing types in this file.
+import 'package:bluetooth_ym/src/_src.dart';
 
-/// Checks if you are awesome. Spoiler: you are.
-class Awesome {
-  bool get isAwesome => true;
+abstract class BluetoothYM {
+  static BluetoothRepositoryInterface get instance {
+    return const BluetoothRepository();
+  }
 }

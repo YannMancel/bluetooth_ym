@@ -1,39 +1,30 @@
-<!-- 
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
+[![badge_flutter]][link_flutter_release]
 
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/guides/libraries/writing-package-pages). 
+# bluetooth_ym
+**Goal**: A dart project to manage bluetooth.
 
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/guides/libraries/create-library-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/developing-packages). 
--->
+## Setup the project in Android studio
+1. Download the project code, preferably using `git clone git@github.com:YannMancel/bluetooth_ym.git`.
+2. In Android Studio, select *File* | *Open...*
+3. Select the project
 
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
+## Dependencies
+* Linter
+    * [lints][dependencies_lints]
+* Data class generator
+    * [build_runner][dependencies_build_runner]
+    * [freezed][dependencies_freezed]
+    * [freezed_annotation][dependencies_freezed_annotation]
+* Bluetooth
+    * [flutter_blue_plus][dependencies_flutter_blue_plus]
+* Dart annotations
+    * [meta][dependencies_meta]
 
-## Features
-
-TODO: List what your package can do. Maybe include images, gifs, or videos.
-
-## Getting started
-
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
-
-## Usage
-
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder. 
-
-```dart
-const like = 'sample';
-```
-
-## Additional information
-
-TODO: Tell users more about the package: where to find more information, how to 
-contribute to the package, how to file issues, what response they can expect 
-from the package authors, and more.
+[badge_flutter]: https://img.shields.io/badge/flutter-v3.3.0-blue?logo=flutter
+[link_flutter_release]: https://docs.flutter.dev/development/tools/sdk/releases
+[dependencies_lints]: https://pub.dev/packages/lints
+[dependencies_build_runner]: https://pub.dev/packages/build_runner
+[dependencies_freezed]: https://pub.dev/packages/freezed
+[dependencies_freezed_annotation]: https://pub.dev/packages/freezed_annotation
+[dependencies_flutter_blue_plus]: https://pub.dev/packages/flutter_blue_plus
+[dependencies_meta]: https://pub.dev/packages/meta

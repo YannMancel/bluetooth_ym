@@ -1,0 +1,11 @@
+# https://www.wilsonwilson.dev/articles/flutter-build-yaml/
+
+targets:
+  $default:
+    builders:
+      freezed|freezed:
+        enabled: true
+        generate_for:
+          - "lib/src/models/bluetooth_state.dart"
+          - "lib/src/models/bluetooth_device.dart"
+          - "lib/src/models/bluetooth_service.dart"

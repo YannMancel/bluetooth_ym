@@ -1,8 +1,5 @@
-import 'package:bluetooth_ym/bluetooth_ym.dart';
-import 'package:test/test.dart';
-
 void main() {
-  group('A group of tests', () {
+/*  group('A group of tests', () {
     final awesome = Awesome();
 
     setUp(() {
@@ -12,5 +9,5 @@ void main() {
     test('First Test', () {
       expect(awesome.isAwesome, isTrue);
     });
-  });
+  });*/
 }
