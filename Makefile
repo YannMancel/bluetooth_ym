@@ -1,4 +1,5 @@
 DART?=dart
+FLUTTER?=flutter
 REPOSITORIES?=lib/
 
 GREEN_COLOR=\033[32m
@@ -42,6 +43,15 @@ format-analyze: format analyze ## Format & Analyze Dart code of the project
 generate-files: ## Generate files with build_runner
 	@$(call print_color_message,"Generate files with build_runner")
 	$(DART) run build_runner build --delete-conflicting-outputs
+
+.PHONY: generate-flutter-example
+generate-flutter-example: ## Generate a flutter project as example
+	@$(call print_color_message,"Generate a flutter project as example")
+	$(FLUTTER) create ./flutter_example/ \
+      --description="A Flutter project as example to use bluetooth_ym package." \
+      --platforms=ios,android \
+      --org="com.bluetooth_ym" \
+	  --project-name="example"
 
 #
 # ----------------------------------------------------------------

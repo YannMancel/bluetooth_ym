@@ -10,15 +10,15 @@
 
 ## Dependencies
 * Linter
-    * [lints][dependencies_lints]
+  * [lints][dependencies_lints]
 * Data class generator
-    * [build_runner][dependencies_build_runner]
-    * [freezed][dependencies_freezed]
-    * [freezed_annotation][dependencies_freezed_annotation]
+  * [build_runner][dependencies_build_runner]
+  * [freezed][dependencies_freezed]
+  * [freezed_annotation][dependencies_freezed_annotation]
 * Bluetooth
-    * [flutter_blue_plus][dependencies_flutter_blue_plus]
+  * [flutter_blue_plus][dependencies_flutter_blue_plus]
 * Dart annotations
-    * [meta][dependencies_meta]
+  * [meta][dependencies_meta]
 
 [badge_flutter]: https://img.shields.io/badge/flutter-v3.3.0-blue?logo=flutter
 [link_flutter_release]: https://docs.flutter.dev/development/tools/sdk/releases
