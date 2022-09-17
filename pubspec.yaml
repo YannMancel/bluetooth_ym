@@ -1,5 +1,6 @@
 name: bluetooth_ym
 description: A dart project to manage bluetooth.
+repository: https://github.com/YannMancel/bluetooth_ym
 
 version: 0.1.0
 

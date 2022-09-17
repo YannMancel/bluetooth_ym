@@ -12,7 +12,7 @@
   * [flutter_hooks][dependencies_flutter_hooks]
   * [hooks_riverpod][dependencies_hooks_riverpod]
 * Bluetooth
-  * [bluetooth_ym]
+  * [bluetooth_ym][dependencies_bluetooth_ym]
 
 ## Troubleshooting
 
@@ -32,6 +32,7 @@
 [dependencies_fvm]: https://fvm.app/
 [dependencies_flutter_hooks]: https://pub.dev/packages/flutter_hooks
 [dependencies_hooks_riverpod]: https://pub.dev/packages/hooks_riverpod
+[dependencies_bluetooth_ym]: https://github.com/YannMancel/bluetooth_ym
 [useful_android_studio]: https://developer.android.com/studio
 [useful_virtual_device]: https://developer.android.com/studio/run/managing-avds.html
 [useful_developer_options]: https://developer.android.com/studio/debug/dev-options.html#enable
