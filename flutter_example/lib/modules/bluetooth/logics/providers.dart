@@ -1,15 +1,15 @@
 import 'package:bluetooth_ym/bluetooth_ym.dart'
     show
         BluetoothDevice,
-        BluetoothRepository,
         BluetoothRepositoryInterface,
         BluetoothService,
-        BluetoothState;
+        BluetoothState,
+        BluetoothYM;
 import 'package:hooks_riverpod/hooks_riverpod.dart'
     show FutureProvider, Provider, StreamProvider;
 
 final bluetoothRepositoryRef = Provider<BluetoothRepositoryInterface>(
-  (_) => const BluetoothRepository(),
+  (_) => BluetoothYM.instance(isDebugMode: true),
   name: 'bluetoothRepositoryRef',
 );
 
