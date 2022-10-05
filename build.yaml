@@ -9,3 +9,4 @@ targets:
           - "lib/src/models/bluetooth_state.dart"
           - "lib/src/models/bluetooth_device.dart"
           - "lib/src/models/bluetooth_service.dart"
+          - "lib/src/models/bluetooth_characteristic.dart"

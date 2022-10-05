@@ -4,11 +4,23 @@ import 'package:bluetooth_ym/src/_src.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart' as bluetooth_lib;
 import 'package:meta/meta.dart' show protected;
 
-class BluetoothRepository implements BluetoothRepositoryInterface {
-  const BluetoothRepository({bool isDebugMode = false})
-      : _isDebugMode = isDebugMode;
+typedef DeviceWrappers = Map<BluetoothDevice, bluetooth_lib.BluetoothDevice>;
+typedef ServiceWrappers = Map<BluetoothService, bluetooth_lib.BluetoothService>;
+typedef CharacteristicWrappers
+    = Map<BluetoothCharacteristic, bluetooth_lib.BluetoothCharacteristic>;
 
-  final bool _isDebugMode;
+class BluetoothRepository implements BluetoothRepositoryInterface {
+  BluetoothRepository({bool isDebugMode = false}) {
+    _isDebugMode = isDebugMode;
+    _deviceWrappers = Map.identity();
+    _serviceWrappers = Map.identity();
+    _characteristicWrappers = Map.identity();
+  }
+
+  late final bool _isDebugMode;
+  late final DeviceWrappers _deviceWrappers;
+  late final ServiceWrappers _serviceWrappers;
+  late final CharacteristicWrappers _characteristicWrappers;
 
   @protected
   static bluetooth_lib.FlutterBluePlus get _instance {
@@ -16,13 +28,21 @@ class BluetoothRepository implements BluetoothRepositoryInterface {
   }
 
   @protected
-  Future<bluetooth_lib.BluetoothDevice> _searchDevice(
-    BluetoothDevice device,
-  ) async {
-    return (await _instance.scanResults.first)
-        .where((scanResult) => scanResult.device.id.toString() == device.id)
-        .first
-        .device;
+  bluetooth_lib.BluetoothDevice _searchDevice(BluetoothDevice device) {
+    if (!_deviceWrappers.containsKey(device)) {
+      throw Exception('Device is not present.');
+    }
+    return _deviceWrappers[device]!;
+  }
+
+  @protected
+  bluetooth_lib.BluetoothService _searchService(
+    BluetoothService service,
+  ) {
+    if (!_serviceWrappers.containsKey(service)) {
+      throw Exception('Service is not present.');
+    }
+    return _serviceWrappers[service]!;
   }
 
   @protected
@@ -32,6 +52,7 @@ class BluetoothRepository implements BluetoothRepositoryInterface {
         ------------------------------------------------------------------------
           BluetoothDevice device:
             - id ${scanResult.device.id}
+            - hashCode ${scanResult.device.id.hashCode}
             - name ${scanResult.device.name}
             - type ${scanResult.device.type}
           AdvertisementData advertisementData:
@@ -61,6 +82,25 @@ class BluetoothRepository implements BluetoothRepositoryInterface {
             - isPrimary ${service.isPrimary}
             - characteristics ${service.characteristics}
             - includedServices ${service.includedServices}
+        ------------------------------------------------------------------------
+        ''');
+    }
+  }
+
+  @protected
+  void _logBluetoothCharacteristic(
+    bluetooth_lib.BluetoothCharacteristic characteristic,
+  ) {
+    if (_isDebugMode) {
+      print('''
+        ------------------------------------------------------------------------
+          BluetoothCharacteristic characteristic:
+            - uuid ${characteristic.uuid}
+            - deviceId ${characteristic.deviceId}
+            - serviceUuid ${characteristic.serviceUuid}
+            - secondaryServiceUuid ${characteristic.secondaryServiceUuid}
+            - properties ${characteristic.properties}
+            - descriptors ${characteristic.descriptors}
         ------------------------------------------------------------------------
         ''');
     }
@@ -122,9 +162,9 @@ class BluetoothRepository implements BluetoothRepositoryInterface {
   Future<List<BluetoothDevice>> startScan({
     Duration timeout = const Duration(seconds: 4),
   }) async {
+    _deviceWrappers.clear();
     final results = await _instance.startScan(timeout: timeout);
 
-    final devices = List<BluetoothDevice>.empty(growable: true);
     for (final bluetooth_lib.ScanResult scanResult in results) {
       _logScanResult(scanResult);
 
@@ -132,10 +172,11 @@ class BluetoothRepository implements BluetoothRepositoryInterface {
         id: scanResult.device.id.toString(),
         name: scanResult.device.name,
       );
-      devices.add(device);
+
+      _deviceWrappers[device] = scanResult.device;
     }
 
-    return devices;
+    return _deviceWrappers.keys.toList(growable: false);
   }
 
   @override
@@ -143,62 +184,61 @@ class BluetoothRepository implements BluetoothRepositoryInterface {
 
   @override
   Future<void> connect(BluetoothDevice device) async {
-    final selectedDevice = await _searchDevice(device);
+    final selectedDevice = _searchDevice(device);
     await selectedDevice.connect();
   }
 
   @override
   Future<void> disconnect(BluetoothDevice device) async {
-    final selectedDevice = await _searchDevice(device);
+    final selectedDevice = _searchDevice(device);
     await selectedDevice.disconnect();
+    _serviceWrappers.clear();
+    _characteristicWrappers.clear();
   }
 
   @override
   Future<List<BluetoothService>> getServices(BluetoothDevice device) async {
-    final selectedDevice = await _searchDevice(device);
+    _serviceWrappers.clear();
+    final selectedDevice = _searchDevice(device);
     final servicesFromPackage = await selectedDevice.discoverServices();
 
-    final services = List<BluetoothService>.empty(growable: true);
     for (final serviceFromPackage in servicesFromPackage) {
       _logBluetoothService(serviceFromPackage);
 
       final service = BluetoothService(
         uuid: serviceFromPackage.uuid.toString(),
       );
-      services.add(service);
+
+      _serviceWrappers[service] = serviceFromPackage;
     }
 
-    return services;
+    return _serviceWrappers.keys.toList(growable: false);
   }
 
-  // Read and write characteristics --------------------------------------------
+  @override
+  Future<List<BluetoothCharacteristic>> getCharacteristics(
+    BluetoothService service,
+  ) async {
+    _characteristicWrappers.clear();
+    final selectedService = _searchService(service);
+    final characteristicsFromPackage = selectedService.characteristics;
 
-  // TODO: update method
-  Future<void> showCharacteristics({
-    required bluetooth_lib.BluetoothService service,
-  }) async {
-    // Reads all characteristics
-    final characteristics = service.characteristics;
-    for (final characteristic in characteristics) {
-      List<int> value = await characteristic.read();
-      if (_isDebugMode) {
-        print('''
-        ------------------------------------------------------------------------
-          BluetoothCharacteristic characteristic:
-            - uuid ${characteristic.uuid}
-            - deviceId ${characteristic.deviceId}
-            - serviceUuid ${characteristic.serviceUuid}
-            - secondaryServiceUuid ${characteristic.secondaryServiceUuid}
-            - properties ${characteristic.properties}
-            - descriptors ${characteristic.descriptors}
-            - $value
-        ------------------------------------------------------------------------
-        ''');
-      }
+    for (final characteristicFromPackage in characteristicsFromPackage) {
+      _logBluetoothCharacteristic(characteristicFromPackage);
+
+      //List<int> value = await characteristic.read();
+
+      // Writes to a characteristic
+      //await c.write([0x12, 0x34])
+
+      final characteristic = BluetoothCharacteristic(
+        uuid: characteristicFromPackage.uuid.toString(),
+      );
+
+      _characteristicWrappers[characteristic] = characteristicFromPackage;
     }
 
-    // Writes to a characteristic
-    //await c.write([0x12, 0x34])
+    return _characteristicWrappers.keys.toList(growable: false);
   }
 
   // Read and write descriptors ------------------------------------------------

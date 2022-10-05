@@ -30,7 +30,12 @@ abstract class BluetoothRepositoryInterface {
   /// Cancels connection to the Bluetooth Device via a [BluetoothDevice].
   Future<void> disconnect(BluetoothDevice device);
 
-  /// Discovers [BluetoothService] offered by the remote [BluetoothDevice]
-  /// as well as their characteristics and descriptors
+  /// Discovers [BluetoothService] offered by the remote [BluetoothDevice].
   Future<List<BluetoothService>> getServices(BluetoothDevice device);
+
+  /// Discovers [BluetoothCharacteristic] offered by the remote
+  /// [BluetoothService].
+  Future<List<BluetoothCharacteristic>> getCharacteristics(
+    BluetoothService service,
+  );
 }
