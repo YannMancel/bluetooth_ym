@@ -30,9 +30,17 @@ final servicesRef =
     await repository.connect(device);
     final services = await repository.getServices(device);
 
+    final servicesWithData = List<BluetoothService>.empty(growable: true);
+    for (final service in services) {
+      final serviceWithData = service.copyWith(
+        characteristics: await repository.getCharacteristics(service),
+      );
+      servicesWithData.add(serviceWithData);
+    }
+
     ref.onDispose(() async => repository.disconnect(device));
 
-    return services;
+    return servicesWithData;
   },
   name: 'servicesRef',
 );

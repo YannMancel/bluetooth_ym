@@ -1,5 +1,5 @@
 import 'package:bluetooth_ym/bluetooth_ym.dart'
-    show BluetoothDevice, BluetoothService;
+    show BluetoothCharacteristic, BluetoothDevice, BluetoothService;
 import 'package:example/_features.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart'
@@ -64,7 +64,7 @@ class _ServiceList extends StatelessWidget {
   }
 }
 
-class _ServiceListTile extends StatelessWidget {
+class _ServiceListTile extends ConsumerWidget {
   const _ServiceListTile(
     this.service, {
     this.margin,
@@ -73,8 +73,32 @@ class _ServiceListTile extends StatelessWidget {
   final BluetoothService service;
   final EdgeInsetsGeometry? margin;
 
+  void _notify(
+    BuildContext context, {
+    required String message,
+  }) {
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          content: Text(message),
+        ),
+      );
+  }
+
+  Future<List<int>> _readCharacteristic(
+    WidgetRef ref, {
+    required BluetoothCharacteristic characteristic,
+  }) async {
+    return ref.read(bluetoothRepositoryRef).readCharacteristics(characteristic);
+  }
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    const kGap = SizedBox.square(dimension: 16.0);
+    const kDivider = Divider();
+    const kTitleStyle = TextStyle(fontSize: 15.0, fontWeight: FontWeight.bold);
+
     return Card(
       color: Colors.grey[200],
       margin: margin ?? EdgeInsets.zero,
@@ -83,7 +107,46 @@ class _ServiceListTile extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            Text('uuid: ${service.uuid}'),
+            const Text('Service', style: kTitleStyle),
+            kDivider,
+            Text(service.uuid),
+            kDivider,
+            const Text('Characteristics', style: kTitleStyle),
+            kDivider,
+            ...service.characteristics.map<Widget>(
+              (e) => Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Text(e.uuid),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      ElevatedButton(
+                        onPressed: () {
+                          _readCharacteristic(
+                            ref,
+                            characteristic: e,
+                          ).then((values) {
+                            // TODO context.notify("...")
+                            _notify(context, message: "READ:\n$values");
+                          }, onError: (_, __) {
+                            // TODO context.notify("...")
+                            _notify(context, message: "Error");
+                          });
+                        },
+                        child: const Text('Read'),
+                      ),
+                      kGap,
+                      ElevatedButton(
+                        onPressed: () {},
+                        child: const Text('Write'),
+                      ),
+                    ],
+                  ),
+                  kGap,
+                ],
+              ),
+            ),
           ],
         ),
       ),
