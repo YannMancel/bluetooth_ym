@@ -17,6 +17,8 @@ final _privateConstructorUsedError = UnsupportedError(
 /// @nodoc
 mixin _$BluetoothService {
   String get uuid => throw _privateConstructorUsedError;
+  List<BluetoothCharacteristic> get characteristics =>
+      throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $BluetoothServiceCopyWith<BluetoothService> get copyWith =>
@@ -28,7 +30,7 @@ abstract class $BluetoothServiceCopyWith<$Res> {
   factory $BluetoothServiceCopyWith(
           BluetoothService value, $Res Function(BluetoothService) then) =
       _$BluetoothServiceCopyWithImpl<$Res>;
-  $Res call({String uuid});
+  $Res call({String uuid, List<BluetoothCharacteristic> characteristics});
 }
 
 /// @nodoc
@@ -43,12 +45,17 @@ class _$BluetoothServiceCopyWithImpl<$Res>
   @override
   $Res call({
     Object? uuid = freezed,
+    Object? characteristics = freezed,
   }) {
     return _then(_value.copyWith(
       uuid: uuid == freezed
           ? _value.uuid
           : uuid // ignore: cast_nullable_to_non_nullable
               as String,
+      characteristics: characteristics == freezed
+          ? _value.characteristics
+          : characteristics // ignore: cast_nullable_to_non_nullable
+              as List<BluetoothCharacteristic>,
     ));
   }
 }
@@ -60,7 +67,7 @@ abstract class _$$_BluetoothServiceCopyWith<$Res>
           _$_BluetoothService value, $Res Function(_$_BluetoothService) then) =
       __$$_BluetoothServiceCopyWithImpl<$Res>;
   @override
-  $Res call({String uuid});
+  $Res call({String uuid, List<BluetoothCharacteristic> characteristics});
 }
 
 /// @nodoc
@@ -77,12 +84,17 @@ class __$$_BluetoothServiceCopyWithImpl<$Res>
   @override
   $Res call({
     Object? uuid = freezed,
+    Object? characteristics = freezed,
   }) {
     return _then(_$_BluetoothService(
       uuid: uuid == freezed
           ? _value.uuid
           : uuid // ignore: cast_nullable_to_non_nullable
               as String,
+      characteristics: characteristics == freezed
+          ? _value._characteristics
+          : characteristics // ignore: cast_nullable_to_non_nullable
+              as List<BluetoothCharacteristic>,
     ));
   }
 }
@@ -90,14 +102,24 @@ class __$$_BluetoothServiceCopyWithImpl<$Res>
 /// @nodoc
 
 class _$_BluetoothService implements _BluetoothService {
-  const _$_BluetoothService({required this.uuid});
+  const _$_BluetoothService(
+      {required this.uuid,
+      final List<BluetoothCharacteristic> characteristics = const []})
+      : _characteristics = characteristics;
 
   @override
   final String uuid;
+  final List<BluetoothCharacteristic> _characteristics;
+  @override
+  @JsonKey()
+  List<BluetoothCharacteristic> get characteristics {
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_characteristics);
+  }
 
   @override
   String toString() {
-    return 'BluetoothService(uuid: $uuid)';
+    return 'BluetoothService(uuid: $uuid, characteristics: $characteristics)';
   }
 
   @override
@@ -105,12 +127,16 @@ class _$_BluetoothService implements _BluetoothService {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_BluetoothService &&
-            const DeepCollectionEquality().equals(other.uuid, uuid));
+            const DeepCollectionEquality().equals(other.uuid, uuid) &&
+            const DeepCollectionEquality()
+                .equals(other._characteristics, _characteristics));
   }
 
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, const DeepCollectionEquality().hash(uuid));
+  int get hashCode => Object.hash(
+      runtimeType,
+      const DeepCollectionEquality().hash(uuid),
+      const DeepCollectionEquality().hash(_characteristics));
 
   @JsonKey(ignore: true)
   @override
@@ -119,11 +145,15 @@ class _$_BluetoothService implements _BluetoothService {
 }
 
 abstract class _BluetoothService implements BluetoothService {
-  const factory _BluetoothService({required final String uuid}) =
+  const factory _BluetoothService(
+          {required final String uuid,
+          final List<BluetoothCharacteristic> characteristics}) =
       _$_BluetoothService;
 
   @override
   String get uuid;
+  @override
+  List<BluetoothCharacteristic> get characteristics;
   @override
   @JsonKey(ignore: true)
   _$$_BluetoothServiceCopyWith<_$_BluetoothService> get copyWith =>

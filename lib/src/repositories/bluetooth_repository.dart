@@ -46,6 +46,16 @@ class BluetoothRepository implements BluetoothRepositoryInterface {
   }
 
   @protected
+  bluetooth_lib.BluetoothCharacteristic _searchCharacteristic(
+    BluetoothCharacteristic characteristic,
+  ) {
+    if (!_characteristicWrappers.containsKey(characteristic)) {
+      throw Exception('Characteristic is not present.');
+    }
+    return _characteristicWrappers[characteristic]!;
+  }
+
+  @protected
   void _logScanResult(bluetooth_lib.ScanResult scanResult) {
     if (_isDebugMode) {
       print('''
@@ -226,11 +236,6 @@ class BluetoothRepository implements BluetoothRepositoryInterface {
     for (final characteristicFromPackage in characteristicsFromPackage) {
       _logBluetoothCharacteristic(characteristicFromPackage);
 
-      //List<int> value = await characteristic.read();
-
-      // Writes to a characteristic
-      //await c.write([0x12, 0x34])
-
       final characteristic = BluetoothCharacteristic(
         uuid: characteristicFromPackage.uuid.toString(),
       );
@@ -241,37 +246,25 @@ class BluetoothRepository implements BluetoothRepositoryInterface {
     return _characteristicWrappers.keys.toList(growable: false);
   }
 
-  // Read and write descriptors ------------------------------------------------
+  @override
+  Future<List<int>> readCharacteristics(
+    BluetoothCharacteristic characteristic,
+  ) {
+    final selectedCharacteristic = _searchCharacteristic(characteristic);
+    return selectedCharacteristic.read();
+  }
 
-  // TODO: update method
-  Future<void> showDescriptors({
-    required bluetooth_lib.BluetoothCharacteristic characteristic,
-  }) async {
-    // Reads all descriptors
-    var descriptors = characteristic.descriptors;
-    for (final bluetoothDescriptor in descriptors) {
-      List<int> value = await bluetoothDescriptor.read();
-      if (_isDebugMode) {
-        print('''
-        ------------------------------------------------------------------------
-          BluetoothCharacteristic characteristic:
-            - uuid ${bluetoothDescriptor.uuid}
-            - deviceId ${bluetoothDescriptor.deviceId}
-            - serviceUuid ${bluetoothDescriptor.serviceUuid}
-            - characteristicUuid ${bluetoothDescriptor.characteristicUuid}
-            - $value
-        ------------------------------------------------------------------------
-        ''');
-      }
-    }
-
-    // Writes to a descriptor
-    //await d.write([0x12, 0x34])
-
-    // Set notifications and listen to changes
-    //await characteristic.setNotifyValue(true);
-    //characteristic.value.listen((value) {
-    //  // do something with new value
-    //});
+  @override
+  Future<void> writeCharacteristics(
+    BluetoothCharacteristic characteristic, {
+    required List<int> values,
+    bool withoutResponse = false,
+  }) {
+    //await characteristicFromPackage.write([0x12, 0x34])
+    final selectedCharacteristic = _searchCharacteristic(characteristic);
+    return selectedCharacteristic.write(
+      values,
+      withoutResponse: withoutResponse,
+    );
   }
 }

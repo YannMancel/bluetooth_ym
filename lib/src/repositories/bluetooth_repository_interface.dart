@@ -38,4 +38,21 @@ abstract class BluetoothRepositoryInterface {
   Future<List<BluetoothCharacteristic>> getCharacteristics(
     BluetoothService service,
   );
+
+  /// Retrieves the values of the [BluetoothCharacteristic]
+  Future<List<int>> readCharacteristics(
+    BluetoothCharacteristic characteristic,
+  );
+
+  /// Writes the values of a [BluetoothCharacteristic].
+  /// [withoutResponse] = true:
+  ///   the write is not guaranteed and will return immediately with success.
+  /// [withoutResponse] = false:
+  ///   the method will return after the write operation has either passed or
+  ///   failed.
+  Future<void> writeCharacteristics(
+    BluetoothCharacteristic characteristic, {
+    required List<int> values,
+    bool withoutResponse = false,
+  });
 }
