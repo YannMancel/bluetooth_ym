@@ -93,6 +93,50 @@ class _ServiceListTile extends ConsumerWidget {
     return ref.read(bluetoothRepositoryRef).readCharacteristics(characteristic);
   }
 
+  Future<void> _writeCharacteristic(
+    WidgetRef ref, {
+    required BluetoothCharacteristic characteristic,
+  }) async {
+    //
+    // + ----------- + ----------- + ----------- + ------------ + ------------ + ------------ + ------------ + ------------ +
+    // |   Start +   |  High byte  |  Low byte   | Register bit | Register bit | Register bit | Register bit |     End      |
+    // |   Control   |  of address |  of address |  bit[31:24]  |  bit[23:16]  |  bit[15:8]   |  bit[7:0]    |              |
+    // + ----------- + ---- ------ + ----------- + ------------ + ------------ + ------------ + ------------ + ------------ +
+    // | 8'b00110110 | 8'b00000000 |             |              |              |              |              | 8'b11001001  |
+    // + ----------- + ----------- + ----------- + ------------ + ------------ + ------------ + ------------ + ------------ +
+    // |     0x36    |    0x00     |             |              |              |              |              |     0xC9     |
+    // + ----------- + ----------- + ----------- + ------------ + ------------ + ------------ + ------------ + ------------ +
+    //
+    final commandsOfSetupElectrode1 = <List<int>>[
+      // Reset control
+      <int>[0x36, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0xC9],
+      // Electrode pulse interval control: (take electrode 1 as an example)
+      <int>[0x36, 0x00, 0x10, 0x00, 0x00, 0x27, 0x10, 0xC9],
+      // Electrode pulse width control: (take electrode 1 as an example)
+      <int>[0x36, 0x00, 0x11, 0x00, 0x00, 0x00, 0x64, 0xC9],
+      // Electrode pulse amplitude control: (take electrode 1 as an example)
+      <int>[0x36, 0x00, 0x12, 0x00, 0x00, 0x00, 0x32, 0xC9],
+      // Electrode enable control: (take electrode 1 as an example)
+      <int>[0x36, 0x00, 0x03, 0x00, 0x00, 0x00, 0x01, 0xC9],
+      // Electrode turn-off control: (take electrode 1 as an example)
+      <int>[0x36, 0x00, 0x03, 0x00, 0x00, 0x00, 0x10, 0xC9],
+    ];
+
+    final commandsOfVersionNumber = <List<int>>[
+      // Reset control
+      <int>[0x36, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0xC9],
+      // Version number
+      <int>[0x36, 0x00, 0x08, 0x00, 0x00, 0x00, 0x00, 0xC9],
+    ];
+
+    for (final command in commandsOfSetupElectrode1) {
+      await ref.read(bluetoothRepositoryRef).writeCharacteristics(
+            characteristic,
+            values: command,
+          );
+    }
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     const kGap = SizedBox.square(dimension: 16.0);
@@ -138,7 +182,9 @@ class _ServiceListTile extends ConsumerWidget {
                       ),
                       kGap,
                       ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          _writeCharacteristic(ref, characteristic: e);
+                        },
                         child: const Text('Write'),
                       ),
                     ],

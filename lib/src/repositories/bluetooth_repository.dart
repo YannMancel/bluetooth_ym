@@ -229,10 +229,10 @@ class BluetoothRepository implements BluetoothRepositoryInterface {
   Future<List<BluetoothCharacteristic>> getCharacteristics(
     BluetoothService service,
   ) async {
-    _characteristicWrappers.clear();
     final selectedService = _searchService(service);
     final characteristicsFromPackage = selectedService.characteristics;
 
+    final CharacteristicWrappers characteristics = Map.identity();
     for (final characteristicFromPackage in characteristicsFromPackage) {
       _logBluetoothCharacteristic(characteristicFromPackage);
 
@@ -240,16 +240,18 @@ class BluetoothRepository implements BluetoothRepositoryInterface {
         uuid: characteristicFromPackage.uuid.toString(),
       );
 
-      _characteristicWrappers[characteristic] = characteristicFromPackage;
+      characteristics[characteristic] = characteristicFromPackage;
     }
 
-    return _characteristicWrappers.keys.toList(growable: false);
+    _characteristicWrappers.addAll(characteristics);
+
+    return characteristics.keys.toList(growable: false);
   }
 
   @override
   Future<List<int>> readCharacteristics(
     BluetoothCharacteristic characteristic,
-  ) {
+  ) async {
     final selectedCharacteristic = _searchCharacteristic(characteristic);
     return selectedCharacteristic.read();
   }
@@ -259,9 +261,19 @@ class BluetoothRepository implements BluetoothRepositoryInterface {
     BluetoothCharacteristic characteristic, {
     required List<int> values,
     bool withoutResponse = false,
-  }) {
-    //await characteristicFromPackage.write([0x12, 0x34])
+  }) async {
     final selectedCharacteristic = _searchCharacteristic(characteristic);
+
+    //TODO Remove from this method
+/*    await selectedCharacteristic.setNotifyValue(true);
+    selectedCharacteristic.value.listen((values) {
+      print('''
+      --------------------------------
+      $values
+      --------------------------------
+      ''');
+    });*/
+
     return selectedCharacteristic.write(
       values,
       withoutResponse: withoutResponse,
